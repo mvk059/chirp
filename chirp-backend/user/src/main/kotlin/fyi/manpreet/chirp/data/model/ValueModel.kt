@@ -1,15 +1,18 @@
 package fyi.manpreet.chirp.data.model
 
-import java.util.UUID
+import java.util.*
 
 @JvmInline
-value class UserId(val id: UUID)
+value class UserId(val value: UUID)
 
 @JvmInline
-value class Username(val username: String)
+value class Username(val value: String)
 
 @JvmInline
-value class Email(val email: String)
+value class Email(val value: String)
 
 @JvmInline
-value class HashedPassword(val hash: String)
+value class RawPassword(val value: String)
+
+@JvmInline
+value class HashedPassword(val value: String)
