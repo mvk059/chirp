@@ -5,10 +5,13 @@ import fyi.manpreet.chirp.data.model.UserId
 import fyi.manpreet.chirp.data.model.Username
 import fyi.manpreet.chirp.infra.database.entities.UserEntity
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
 interface UserRepository : JpaRepository<UserEntity, UserId> {
     fun findByEmail(email: String): UserEntity?
 
     fun findByEmailOrUsername(email: Email, username: Username): UserEntity?
+
+    override fun findById(id: UserId): Optional<UserEntity>
 
 }

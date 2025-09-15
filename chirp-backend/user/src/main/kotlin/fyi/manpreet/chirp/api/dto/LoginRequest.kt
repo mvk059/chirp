@@ -1,9 +1,10 @@
 package fyi.manpreet.chirp.api.dto
 
-import fyi.manpreet.chirp.data.model.Email
-import fyi.manpreet.chirp.data.model.RawPassword
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class LoginRequest(
-    val email: Email,
-    val password: RawPassword,
+    @param:JsonProperty("email")
+    val email: String,
+    @param:JsonProperty("password")
+    val password: String,
 )

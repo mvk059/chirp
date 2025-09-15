@@ -12,3 +12,12 @@ value class AccessToken(val token: String)
 @JvmInline
 value class RefreshToken(val token: String)
 
+enum class Token {
+    AccessToken, RefreshToken
+}
+
+enum class TokenValidity {
+    ValidAccessToken,
+    ValidRefreshToken,
+    InvalidToken
+}
