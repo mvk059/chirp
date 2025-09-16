@@ -1,4 +1,4 @@
-package fyi.manpreet.chirp.service.auth
+package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.data.model.UserId
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException

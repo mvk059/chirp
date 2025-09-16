@@ -3,6 +3,7 @@ package fyi.manpreet.chirp.api.exception_handler
 import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
+import fyi.manpreet.chirp.domain.exception.SamePasswordException
 import fyi.manpreet.chirp.domain.exception.UserAlreadyExistsException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -64,5 +65,14 @@ class AuthExceptionHandler {
     fun onEmailNotVerified(exception: EmailNotVerifiedException) = mapOf(
         "code" to "EMAIL_NOT_VERIFIED",
         "message" to exception.message
+    )
+
+    @ExceptionHandler(SamePasswordException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun onSamePassword(
+        e: SamePasswordException
+    ) = mapOf(
+        "code" to "SAME_PASSWORD",
+        "message" to e.message
     )
 }

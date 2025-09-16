@@ -1,4 +1,4 @@
-package fyi.manpreet.chirp.service.auth
+package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.data.model.Email
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
@@ -27,16 +27,14 @@ class EmailVerificationService(
     @Transactional
     fun createVerificationToken(email: Email): EmailVerificationToken {
         val userEntity = userRepository.findByEmail(email.value) ?: throw UserNotFoundException()
-        val existingTokens = emailVerificationRepository.findByUserAndUsedAtIsNull(userEntity)
 
-        val now = Instant.now()
-        val usedTokens = existingTokens.map { it.apply { this.usedAt = now } }
-        emailVerificationRepository.saveAll(usedTokens)
+        emailVerificationRepository.invalidateActiveTokensForUser(userEntity)
 
         val token = EmailVerificationTokenEntity(
-            expiresAt = now.plus(expiryHours, ChronoUnit.HOURS),
+            expiresAt = Instant.now().plus(expiryHours, ChronoUnit.HOURS),
             user = userEntity
         )
+
         return emailVerificationRepository.save(token).toEmailVerificationToken()
     }
 

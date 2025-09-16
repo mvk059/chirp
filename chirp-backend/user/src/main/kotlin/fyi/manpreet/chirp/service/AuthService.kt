@@ -1,4 +1,4 @@
-package fyi.manpreet.chirp.service.auth
+package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.data.model.Email
 import fyi.manpreet.chirp.data.model.RawPassword
