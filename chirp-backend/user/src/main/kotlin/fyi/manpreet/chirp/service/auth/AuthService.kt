@@ -4,6 +4,7 @@ import fyi.manpreet.chirp.data.model.Email
 import fyi.manpreet.chirp.data.model.RawPassword
 import fyi.manpreet.chirp.data.model.UserId
 import fyi.manpreet.chirp.data.model.Username
+import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.PasswordEncodeException
@@ -31,21 +32,24 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
     private val refreshTokenRepository: RefreshTokenRepository,
+    private val emailVerificationService: EmailVerificationService
 ) {
 
     fun register(username: Username, email: Email, rawPassword: RawPassword): User {
+        val trimmedEmail = Email(email.value.trim())
         val username = Username(username.value.trim())
-        val email = Email(email.value.trim())
         val user = userRepository.findByEmailOrUsername(
-            email = email,
+            email = trimmedEmail,
             username = username
         )
         if (user != null) throw UserAlreadyExistsException()
 
         val hashedPassword = passwordEncoder.encode(rawPassword).getOrElse { throw PasswordEncodeException(it) }
-        val savedUser = userRepository.save(
-            UserEntity(email = email, username = username, hashedPassword = hashedPassword)
+        val savedUser = userRepository.saveAndFlush(
+            UserEntity(email = trimmedEmail, username = username, hashedPassword = hashedPassword)
         ).toUser()
+
+        val token = emailVerificationService.createVerificationToken(trimmedEmail)
 
         return savedUser
     }
@@ -53,8 +57,8 @@ class AuthService(
     fun login(email: Email, password: RawPassword): AuthenticatedUser {
         val user = userRepository.findByEmail(email.value.trim()) ?: throw InvalidCredentialsException()
         if (passwordEncoder.matches(password, user.hashedPassword).not()) throw InvalidCredentialsException()
+        if(!user.hasVerifiedEmail) throw EmailNotVerifiedException()
 
-        // TODO Check for verified email
         val userId = user.id ?: throw UserNotFoundException()
         val accessToken = jwtService.generateAccessToken(userId)
         val refreshToken = jwtService.generateRefreshToken(userId)

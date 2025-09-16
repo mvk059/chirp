@@ -1,5 +1,6 @@
 package fyi.manpreet.chirp.api.exception_handler
 
+import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.UserAlreadyExistsException
@@ -25,7 +26,7 @@ class AuthExceptionHandler {
     @ExceptionHandler(UserNotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun onUserNotFound(
-        e: UserNotFoundException
+        e: UserNotFoundException,
     ) = mapOf(
         "code" to "USER_NOT_FOUND",
         "message" to e.message
@@ -34,7 +35,7 @@ class AuthExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun onInvalidCredentials(
-        e: InvalidCredentialsException
+        e: InvalidCredentialsException,
     ) = mapOf(
         "code" to "INVALID_CREDENTIALS",
         "message" to e.message
@@ -57,4 +58,11 @@ class AuthExceptionHandler {
             )
         )
     }
+
+    @ExceptionHandler(EmailNotVerifiedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onEmailNotVerified(exception: EmailNotVerifiedException) = mapOf(
+        "code" to "EMAIL_NOT_VERIFIED",
+        "message" to exception.message
+    )
 }
