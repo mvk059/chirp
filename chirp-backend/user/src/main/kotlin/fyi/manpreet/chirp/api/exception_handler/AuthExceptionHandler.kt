@@ -1,14 +1,18 @@
 package fyi.manpreet.chirp.api.exception_handler
 
+import fyi.manpreet.chirp.api.dto.ErrorBody
 import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
+import fyi.manpreet.chirp.domain.exception.RateLimitException
 import fyi.manpreet.chirp.domain.exception.SamePasswordException
 import fyi.manpreet.chirp.domain.exception.UserAlreadyExistsException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -75,4 +79,28 @@ class AuthExceptionHandler {
         "code" to "SAME_PASSWORD",
         "message" to e.message
     )
+
+    @ExceptionHandler(RateLimitException::class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    fun onRateLimitExceeded(
+        e: RateLimitException
+    ) = mapOf(
+        "code" to "RATE_LIMIT_EXCEEDED",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(MissingRequestHeaderException::class)
+    fun handleMissingHeader(
+        ex: MissingRequestHeaderException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorBody> {
+        val headerName = ex.headerName ?: "unknown"
+        val body = ErrorBody(
+            status = HttpStatus.BAD_REQUEST.value(),
+            error = "Bad Request",
+            message = "Required request header '$headerName' is missing",
+            path = request.requestURI
+        )
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
+    }
 }

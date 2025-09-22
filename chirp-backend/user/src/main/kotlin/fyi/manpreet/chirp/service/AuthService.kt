@@ -35,21 +35,19 @@ class AuthService(
     private val emailVerificationService: EmailVerificationService
 ) {
 
-    fun register(username: Username, email: Email, rawPassword: RawPassword): User {
-        val trimmedEmail = Email(email.value.trim())
-        val username = Username(username.value.trim())
+    fun register(username: Username, email: Email, rawPassword: RawPassword, idempotencyKey: String? = null): User {
         val user = userRepository.findByEmailOrUsername(
-            email = trimmedEmail,
+            email = email,
             username = username
         )
         if (user != null) throw UserAlreadyExistsException()
 
         val hashedPassword = passwordEncoder.encode(rawPassword).getOrElse { throw PasswordEncodeException(it) }
         val savedUser = userRepository.saveAndFlush(
-            UserEntity(email = trimmedEmail, username = username, hashedPassword = hashedPassword)
+            UserEntity(email = email, username = username, hashedPassword = hashedPassword)
         ).toUser()
 
-        val token = emailVerificationService.createVerificationToken(trimmedEmail)
+        val token = emailVerificationService.createVerificationToken(email, idempotencyKey)
 
         return savedUser
     }

@@ -22,4 +22,6 @@ interface EmailVerificationRepository : JpaRepository<EmailVerificationTokenEnti
         WHERE e.user = :user
     """)
     fun invalidateActiveTokensForUser(user: UserEntity)
+
+    fun findByIdempotencyKey(idempotencyKey: String): EmailVerificationTokenEntity?
 }

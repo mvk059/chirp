@@ -10,11 +10,13 @@ import fyi.manpreet.chirp.api.dto.ResetPasswordRequest
 import fyi.manpreet.chirp.api.dto.UserDto
 import fyi.manpreet.chirp.api.mapper.toAuthenticatedUserDto
 import fyi.manpreet.chirp.api.mapper.toUserDto
+import fyi.manpreet.chirp.api.util.IdempotencyKey
 import fyi.manpreet.chirp.data.model.Email
 import fyi.manpreet.chirp.data.model.RawPassword
 import fyi.manpreet.chirp.data.model.Username
 import fyi.manpreet.chirp.domain.model.EmailToken
 import fyi.manpreet.chirp.domain.user.RefreshToken
+import fyi.manpreet.chirp.infra.rate_limiting.EmailRateLimiter
 import fyi.manpreet.chirp.service.AuthService
 import fyi.manpreet.chirp.service.EmailVerificationService
 import fyi.manpreet.chirp.service.PasswordResetService
@@ -22,6 +24,7 @@ import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -31,17 +34,20 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService,
     private val emailVerificationService: EmailVerificationService,
-    private val passwordResetService: PasswordResetService
+    private val passwordResetService: PasswordResetService,
+    private val emailRateLimiter: EmailRateLimiter,
 ) {
 
     @PostMapping("/register")
     fun register(
-        @Valid @RequestBody body: RegisterRequest
+        @RequestHeader("Idempotency-Key") @IdempotencyKey idempotencyKey: String,
+        @Valid @RequestBody body: RegisterRequest,
     ): UserDto {
         return authService.register(
-            username = Username(body.username),
-            email = Email(body.email),
-            rawPassword = RawPassword(body.password)
+            username = Username(body.username.trim()),
+            email = Email(body.email.lowercase().trim()),
+            rawPassword = RawPassword(body.password),
+            idempotencyKey = idempotencyKey.trim(),
         ).toUserDto()
     }
 
@@ -69,6 +75,15 @@ class AuthController(
         @RequestParam token: String
     ) {
         emailVerificationService.verifyEmail(EmailToken(token))
+    }
+
+    @PostMapping("/resend-verification")
+    fun resendVerification(
+        @Valid @RequestBody body: EmailRequest
+    ) {
+        emailRateLimiter.withRateLimit(email = Email(body.email)) {
+            emailVerificationService.resendVerificationEmail(body.email)
+        }
     }
 
     @PostMapping("/forgot-password")

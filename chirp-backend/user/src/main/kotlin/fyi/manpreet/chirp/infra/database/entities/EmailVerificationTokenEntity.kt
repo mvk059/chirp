@@ -19,7 +19,7 @@ import java.time.Instant
     name = "email_verification_tokens",
     schema = "user_service",
     indexes = [
-        Index(name = "idx_email_verification_token_token", columnList = "token")
+        Index(name = "idx_email_verification_token", columnList = "token")
     ]
 
 )
@@ -44,6 +44,9 @@ class EmailVerificationTokenEntity(
 
     @CreationTimestamp
     var createdAt: Instant = Instant.now(),
+
+    @Column(name = "idempotency_key", nullable = true, unique = true)
+    var idempotencyKey: String? = null,
 ) {
 
     val isUsed: Boolean
