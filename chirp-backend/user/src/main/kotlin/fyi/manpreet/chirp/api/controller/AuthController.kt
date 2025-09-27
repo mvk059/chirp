@@ -10,7 +10,6 @@ import fyi.manpreet.chirp.api.dto.ResetPasswordRequest
 import fyi.manpreet.chirp.api.dto.UserDto
 import fyi.manpreet.chirp.api.mapper.toAuthenticatedUserDto
 import fyi.manpreet.chirp.api.mapper.toUserDto
-import fyi.manpreet.chirp.api.util.IdempotencyKey
 import fyi.manpreet.chirp.data.model.Email
 import fyi.manpreet.chirp.data.model.RawPassword
 import fyi.manpreet.chirp.data.model.Username
@@ -24,7 +23,6 @@ import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -40,20 +38,18 @@ class AuthController(
 
     @PostMapping("/register")
     fun register(
-        @RequestHeader("Idempotency-Key") @IdempotencyKey idempotencyKey: String,
         @Valid @RequestBody body: RegisterRequest,
     ): UserDto {
         return authService.register(
             username = Username(body.username.trim()),
             email = Email(body.email.lowercase().trim()),
             rawPassword = RawPassword(body.password),
-            idempotencyKey = idempotencyKey.trim(),
         ).toUserDto()
     }
 
     @PostMapping("/login")
     fun login(
-        @RequestBody body: LoginRequest
+        @RequestBody body: LoginRequest,
     ): AuthenticatedUserDto {
         return authService.login(
             email = Email(body.email),
@@ -63,7 +59,7 @@ class AuthController(
 
     @PostMapping("/refresh")
     fun refresh(
-        @RequestBody body: RefreshRequest
+        @RequestBody body: RefreshRequest,
     ): AuthenticatedUserDto {
         return authService
             .refresh(RefreshToken(body.refreshToken))
@@ -72,14 +68,14 @@ class AuthController(
 
     @GetMapping("/verify")
     fun verifyEmail(
-        @RequestParam token: String
+        @RequestParam token: String,
     ) {
         emailVerificationService.verifyEmail(EmailToken(token))
     }
 
     @PostMapping("/resend-verification")
     fun resendVerification(
-        @Valid @RequestBody body: EmailRequest
+        @Valid @RequestBody body: EmailRequest,
     ) {
         emailRateLimiter.withRateLimit(email = Email(body.email)) {
             emailVerificationService.resendVerificationEmail(body.email)
@@ -88,14 +84,14 @@ class AuthController(
 
     @PostMapping("/forgot-password")
     fun forgotPassword(
-        @Valid @RequestBody body: EmailRequest
+        @Valid @RequestBody body: EmailRequest,
     ) {
         passwordResetService.requestPasswordReset(Email(body.email.trim()))
     }
 
     @PostMapping("/reset-password")
     fun resetPassword(
-        @Valid @RequestBody body: ResetPasswordRequest
+        @Valid @RequestBody body: ResetPasswordRequest,
     ) {
         passwordResetService.resetPassword(
             token = body.token,
@@ -105,7 +101,7 @@ class AuthController(
 
     @PostMapping("/change-password")
     fun changePassword(
-        @Valid @RequestBody body: ChangePasswordRequest
+        @Valid @RequestBody body: ChangePasswordRequest,
     ) {
         // TODO: Extract request user ID and call service
     }

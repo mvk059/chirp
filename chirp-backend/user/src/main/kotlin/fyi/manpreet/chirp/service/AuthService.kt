@@ -35,7 +35,7 @@ class AuthService(
     private val emailVerificationService: EmailVerificationService
 ) {
 
-    fun register(username: Username, email: Email, rawPassword: RawPassword, idempotencyKey: String? = null): User {
+    fun register(username: Username, email: Email, rawPassword: RawPassword): User {
         val user = userRepository.findByEmailOrUsername(
             email = email,
             username = username
@@ -47,7 +47,7 @@ class AuthService(
             UserEntity(email = email, username = username, hashedPassword = hashedPassword)
         ).toUser()
 
-        val token = emailVerificationService.createVerificationToken(email, idempotencyKey)
+        val token = emailVerificationService.createVerificationToken(email)
 
         return savedUser
     }

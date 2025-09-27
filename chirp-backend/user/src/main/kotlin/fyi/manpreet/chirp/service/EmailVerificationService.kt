@@ -23,7 +23,6 @@ import java.time.temporal.ChronoUnit
 class EmailVerificationService(
     private val emailVerificationRepository: EmailVerificationRepository,
     private val userRepository: UserRepository,
-    private val emailRateLimiter: EmailRateLimiter,
     @param:Value("\${chirp.email.verification.expiry-hours}") private val expiryHours: Long
 ) {
 
@@ -38,42 +37,18 @@ class EmailVerificationService(
      * Database uniqueness on idempotencyKey is the authoritative dedupe.
      */
     @Transactional
-    fun createVerificationToken(email: Email, idempotencyKey: String? = null): EmailVerificationToken {
-        val userEntity = userRepository.findByEmail(email.value) ?: throw UserNotFoundException()
+    fun createVerificationToken(email: Email): EmailVerificationToken {
+        val userEntity = userRepository.findByEmail(email.value)
+            ?: throw UserNotFoundException()
 
-        // If idempotencyKey provided, attempt to return the existing token first (fast path)
-        if (idempotencyKey.isNullOrBlank().not()) {
-            val existing = emailVerificationRepository.findByIdempotencyKey(idempotencyKey = idempotencyKey)
-            if (existing != null) {
-                // TODO If an existing token is expired or used, we may still want to create a fresh token.
-                // Here we return the existing one as the canonical response; adjust policy if desired.
-                return existing.toEmailVerificationToken()
-            }
-        }
-
-        // Invalidate active tokens for the user
         emailVerificationRepository.invalidateActiveTokensForUser(userEntity)
 
-        val tokenEntity = EmailVerificationTokenEntity(
+        val token = EmailVerificationTokenEntity(
             expiresAt = Instant.now().plus(expiryHours, ChronoUnit.HOURS),
-            user = userEntity,
-            idempotencyKey = idempotencyKey?.takeIf { it.isNotBlank() }
+            user = userEntity
         )
 
-        // Try to save. Under concurrent requests with the same idempotencyKey, the unique constraint will cause a DataIntegrityViolationException on collision.
-        try {
-            val saved = emailVerificationRepository.save(tokenEntity)
-            return saved.toEmailVerificationToken()
-        } catch (exception: DataIntegrityViolationException) {
-            // Unique constraint likely violated: someone else inserted the record concurrently. Find the existing record by idempotencyKey and return it.
-            if (idempotencyKey.isNullOrBlank().not()) {
-                val existingAfterConflict = emailVerificationRepository.findByIdempotencyKey(idempotencyKey)
-                if (existingAfterConflict != null) {
-                    return existingAfterConflict.toEmailVerificationToken()
-                }
-            }
-            throw exception
-        }
+        return emailVerificationRepository.save(token).toEmailVerificationToken()
     }
 
     @Transactional
