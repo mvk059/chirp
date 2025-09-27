@@ -6,6 +6,7 @@ import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.RateLimitException
 import fyi.manpreet.chirp.domain.exception.SamePasswordException
+import fyi.manpreet.chirp.domain.exception.UnauthorizedException
 import fyi.manpreet.chirp.domain.exception.UserAlreadyExistsException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
 import jakarta.servlet.http.HttpServletRequest
@@ -103,4 +104,13 @@ class AuthExceptionHandler {
         )
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body)
     }
+
+    @ExceptionHandler(UnauthorizedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onUnauthorized(
+        e: UnauthorizedException
+    ) = mapOf(
+        "code" to "UNAUTHORIZED",
+        "message" to e.message
+    )
 }
