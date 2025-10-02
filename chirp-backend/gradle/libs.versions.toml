@@ -2,7 +2,7 @@
 kotlin = "2.2.0"
 spring-boot = "4.0.0-SNAPSHOT"
 spring-dependency-management = "1.1.7"
-jackson = "2.19.0"
+jackson = "2.17.0"
 jakarta = "6.1.0"
 jwt = "0.12.6"
 okhttp = "4.12.0"
@@ -35,6 +35,7 @@ jwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jwt" }
 
 # Jackson
 jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson-datatype-jsr = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 # Kotlin
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }

@@ -1,9 +1,9 @@
 package fyi.manpreet.chirp.domain.user
 
 import fyi.manpreet.chirp.data.enum.EmailVerificationStatus
-import fyi.manpreet.chirp.data.model.Email
-import fyi.manpreet.chirp.data.model.UserId
-import fyi.manpreet.chirp.data.model.Username
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
 
 data class User(
     val id: UserId,

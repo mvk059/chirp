@@ -1,7 +1,7 @@
 package fyi.manpreet.chirp.infra.security
 
-import fyi.manpreet.chirp.data.model.HashedPassword
-import fyi.manpreet.chirp.data.model.RawPassword
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.HashedPassword
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.RawPassword
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 

@@ -2,6 +2,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  mail:
+    host: smtp.mailgun.org
+    username: chirp@sandboxd1732a458be34ed0a7b30af4b2cfb8ea.mailgun.org
 
 jwt:
   expiration-minutes: 15
@@ -10,6 +13,8 @@ nginx:
   require-proxy: true
 
 chirp:
+  email:
+    url: "https://chirp.manpreet.fyi"
   rate-limit:
     ip:
       apply-limit: true

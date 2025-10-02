@@ -1,9 +1,10 @@
 package fyi.manpreet.chirp.service
 
-import fyi.manpreet.chirp.data.model.Email
-import fyi.manpreet.chirp.data.model.RawPassword
-import fyi.manpreet.chirp.data.model.UserId
-import fyi.manpreet.chirp.data.model.Username
+import fyi.manpreet.chirp.domain.event.user.UserEvent
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.RawPassword
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
 import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
@@ -19,6 +20,7 @@ import fyi.manpreet.chirp.infra.database.entities.UserEntity
 import fyi.manpreet.chirp.infra.database.mappers.toUser
 import fyi.manpreet.chirp.infra.database.repository.RefreshTokenRepository
 import fyi.manpreet.chirp.infra.database.repository.UserRepository
+import fyi.manpreet.chirp.infra.message_queue.EventPublisher
 import fyi.manpreet.chirp.infra.security.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,7 +34,8 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtService: JwtService,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val emailVerificationService: EmailVerificationService
+    private val emailVerificationService: EmailVerificationService,
+    private val eventPublisher: EventPublisher,
 ) {
 
     fun register(username: Username, email: Email, rawPassword: RawPassword): User {
@@ -48,6 +51,15 @@ class AuthService(
         ).toUser()
 
         val token = emailVerificationService.createVerificationToken(email)
+
+        eventPublisher.publish(
+            event = UserEvent.Created(
+                userId = savedUser.id,
+                email = savedUser.email,
+                username = savedUser.username,
+                verificationToken = token.token
+            )
+        )
 
         return savedUser
     }
@@ -92,6 +104,13 @@ class AuthService(
             accessToken = newAccessToken,
             refreshToken = newRefreshToken
         )
+    }
+
+    @Transactional
+    fun logout(refreshToken: RefreshToken) {
+        val userId = jwtService.getUserIdFromToken(refreshToken.token)
+        val hashedToken = hashToken(refreshToken.token)
+        refreshTokenRepository.deleteByUserIdAndHashedToken(userId, hashedToken)
     }
 
     private fun storeRefreshToken(userId: UserId, refreshToken: RefreshToken) {

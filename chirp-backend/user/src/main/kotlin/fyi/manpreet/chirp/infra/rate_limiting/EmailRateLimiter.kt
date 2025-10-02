@@ -1,6 +1,6 @@
 package fyi.manpreet.chirp.infra.rate_limiting
 
-import fyi.manpreet.chirp.data.model.Email
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
 import fyi.manpreet.chirp.domain.exception.RateLimitException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource

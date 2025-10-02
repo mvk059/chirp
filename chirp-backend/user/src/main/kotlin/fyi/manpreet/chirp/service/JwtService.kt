@@ -1,6 +1,6 @@
 package fyi.manpreet.chirp.service
 
-import fyi.manpreet.chirp.data.model.UserId
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
 import fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.user.AccessToken
 import fyi.manpreet.chirp.domain.user.RefreshToken

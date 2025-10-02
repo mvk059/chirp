@@ -11,16 +11,16 @@ import fyi.manpreet.chirp.api.dto.UserDto
 import fyi.manpreet.chirp.api.mapper.toAuthenticatedUserDto
 import fyi.manpreet.chirp.api.mapper.toUserDto
 import fyi.manpreet.chirp.api.util.requestUserId
-import fyi.manpreet.chirp.data.model.Email
-import fyi.manpreet.chirp.data.model.RawPassword
-import fyi.manpreet.chirp.data.model.Username
-import fyi.manpreet.chirp.domain.model.EmailToken
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.RawPassword
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
 import fyi.manpreet.chirp.domain.user.RefreshToken
 import fyi.manpreet.chirp.infra.config.IpRateLimit
 import fyi.manpreet.chirp.infra.rate_limiting.EmailRateLimiter
 import fyi.manpreet.chirp.service.AuthService
 import fyi.manpreet.chirp.service.EmailVerificationService
 import fyi.manpreet.chirp.service.PasswordResetService
+import fyi.manpreet.fyi.manpreet.chirp.domain.type.VerificationToken
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -84,6 +84,18 @@ class AuthController(
             .toAuthenticatedUserDto()
     }
 
+    @PostMapping("/logout")
+    @IpRateLimit(
+        requests = 10,
+        duration = 1L,
+        unit = TimeUnit.HOURS
+    )
+    fun logout(
+        @RequestBody body: RefreshRequest,
+    ) {
+        authService.logout(RefreshToken(body.refreshToken))
+    }
+
     @PostMapping("/resend-verification")
     @IpRateLimit(
         requests = 10,
@@ -93,8 +105,9 @@ class AuthController(
     fun resendVerification(
         @Valid @RequestBody body: EmailRequest,
     ) {
-        emailRateLimiter.withRateLimit(email = Email(body.email)) {
-            emailVerificationService.resendVerificationEmail(body.email)
+        val email = Email(body.email.lowercase().trim())
+        emailRateLimiter.withRateLimit(email = email) {
+            emailVerificationService.resendVerificationEmail(email)
         }
     }
 
@@ -102,7 +115,7 @@ class AuthController(
     fun verifyEmail(
         @RequestParam token: String,
     ) {
-        emailVerificationService.verifyEmail(EmailToken(token))
+        emailVerificationService.verifyEmail(VerificationToken(token))
     }
 
     @PostMapping("/forgot-password")
