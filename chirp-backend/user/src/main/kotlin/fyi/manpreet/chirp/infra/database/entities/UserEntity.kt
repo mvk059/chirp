@@ -1,9 +1,9 @@
 package fyi.manpreet.chirp.infra.database.entities
 
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.HashedPassword
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.HashedPassword
+import fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.Username
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

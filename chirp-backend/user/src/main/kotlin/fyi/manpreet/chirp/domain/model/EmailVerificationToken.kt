@@ -1,7 +1,7 @@
 package fyi.manpreet.chirp.domain.model
 
 import fyi.manpreet.chirp.domain.user.User
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.VerificationToken
+import fyi.manpreet.chirp.domain.type.VerificationToken
 
 data class EmailVerificationToken(
     val id: Long,

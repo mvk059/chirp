@@ -2,7 +2,7 @@ package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.data.enum.EmailVerificationStatus
 import fyi.manpreet.chirp.domain.event.user.UserEvent
-import fyi.manpreet.chirp.domain.exception.InvalidTokenException
+import fyi.manpreet.fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
 import fyi.manpreet.chirp.domain.model.EmailVerificationToken
 import fyi.manpreet.chirp.infra.database.entities.EmailVerificationTokenEntity
@@ -11,8 +11,8 @@ import fyi.manpreet.chirp.infra.database.mappers.toUser
 import fyi.manpreet.chirp.infra.database.repository.EmailVerificationRepository
 import fyi.manpreet.chirp.infra.database.repository.UserRepository
 import fyi.manpreet.chirp.infra.message_queue.EventPublisher
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.VerificationToken
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.VerificationToken
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -60,6 +60,14 @@ class EmailVerificationService(
 
         emailVerificationRepository.save(verificationToken.apply { this.usedAt = Instant.now() })
         userRepository.save(verificationToken.user.apply { this.hasVerifiedEmail = true }).toUser()
+
+        eventPublisher.publish(
+            event = UserEvent.Verified(
+                userId = verificationToken.user.id!!,
+                email = verificationToken.user.email,
+                username = verificationToken.user.username,
+            )
+        )
     }
 
     @Transactional

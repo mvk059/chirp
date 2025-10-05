@@ -2,7 +2,7 @@ package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.domain.event.user.UserEvent
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
-import fyi.manpreet.chirp.domain.exception.InvalidTokenException
+import fyi.manpreet.fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.SamePasswordException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
 import fyi.manpreet.chirp.infra.database.entities.PasswordResetTokenEntity
@@ -11,10 +11,10 @@ import fyi.manpreet.chirp.infra.database.repository.RefreshTokenRepository
 import fyi.manpreet.chirp.infra.database.repository.UserRepository
 import fyi.manpreet.chirp.infra.message_queue.EventPublisher
 import fyi.manpreet.chirp.infra.security.PasswordEncoder
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.PasswordResetToken
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.RawPassword
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.PasswordResetToken
+import fyi.manpreet.chirp.domain.type.RawPassword
+import fyi.manpreet.chirp.domain.type.UserId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.scheduling.annotation.Scheduled

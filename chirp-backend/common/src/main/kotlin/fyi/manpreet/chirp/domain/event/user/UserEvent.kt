@@ -1,11 +1,11 @@
 package fyi.manpreet.chirp.domain.event.user
 
 import fyi.manpreet.chirp.domain.event.ChirpEvent
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.PasswordResetToken
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.VerificationToken
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.PasswordResetToken
+import fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.Username
+import fyi.manpreet.chirp.domain.type.VerificationToken
 import java.time.Instant
 import java.util.UUID
 

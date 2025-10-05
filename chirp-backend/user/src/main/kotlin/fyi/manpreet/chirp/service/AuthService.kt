@@ -1,19 +1,18 @@
 package fyi.manpreet.chirp.service
 
 import fyi.manpreet.chirp.domain.event.user.UserEvent
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.RawPassword
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
 import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
-import fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.PasswordEncodeException
 import fyi.manpreet.chirp.domain.exception.UserAlreadyExistsException
 import fyi.manpreet.chirp.domain.exception.UserNotFoundException
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.RawPassword
+import fyi.manpreet.chirp.domain.type.RefreshToken
+import fyi.manpreet.chirp.domain.type.TokenValidity
+import fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.Username
 import fyi.manpreet.chirp.domain.user.AuthenticatedUser
-import fyi.manpreet.chirp.domain.user.RefreshToken
-import fyi.manpreet.chirp.domain.user.TokenValidity
 import fyi.manpreet.chirp.domain.user.User
 import fyi.manpreet.chirp.infra.database.entities.RefreshTokenEntity
 import fyi.manpreet.chirp.infra.database.entities.UserEntity
@@ -22,6 +21,7 @@ import fyi.manpreet.chirp.infra.database.repository.RefreshTokenRepository
 import fyi.manpreet.chirp.infra.database.repository.UserRepository
 import fyi.manpreet.chirp.infra.message_queue.EventPublisher
 import fyi.manpreet.chirp.infra.security.PasswordEncoder
+import fyi.manpreet.fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.security.MessageDigest
@@ -67,7 +67,7 @@ class AuthService(
     fun login(email: Email, password: RawPassword): AuthenticatedUser {
         val user = userRepository.findByEmail(email.value.trim()) ?: throw InvalidCredentialsException()
         if (passwordEncoder.matches(password, user.hashedPassword).not()) throw InvalidCredentialsException()
-        if(!user.hasVerifiedEmail) throw EmailNotVerifiedException()
+        if (!user.hasVerifiedEmail) throw EmailNotVerifiedException()
 
         val userId = user.id ?: throw UserNotFoundException()
         val accessToken = jwtService.generateAccessToken(userId)

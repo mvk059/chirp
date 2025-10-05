@@ -1,7 +1,7 @@
 package fyi.manpreet.chirp.api.config
 
-import fyi.manpreet.chirp.domain.user.AccessToken
-import fyi.manpreet.chirp.domain.user.TokenValidity
+import fyi.manpreet.chirp.domain.type.AccessToken
+import fyi.manpreet.chirp.domain.type.TokenValidity
 import fyi.manpreet.chirp.service.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

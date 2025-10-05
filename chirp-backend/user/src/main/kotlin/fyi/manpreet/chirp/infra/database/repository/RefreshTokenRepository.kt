@@ -1,6 +1,6 @@
 package fyi.manpreet.chirp.infra.database.repository
 
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.UserId
 import fyi.manpreet.chirp.infra.database.entities.RefreshTokenEntity
 import org.springframework.data.jpa.repository.JpaRepository
 

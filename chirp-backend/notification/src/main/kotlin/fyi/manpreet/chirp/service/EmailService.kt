@@ -1,11 +1,11 @@
 package fyi.manpreet.chirp.service
 
 
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Email
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.PasswordResetToken
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.Username
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.VerificationToken
+import fyi.manpreet.chirp.domain.type.Email
+import fyi.manpreet.chirp.domain.type.PasswordResetToken
+import fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.Username
+import fyi.manpreet.chirp.domain.type.VerificationToken
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.MailException

@@ -1,6 +1,6 @@
 package fyi.manpreet.chirp.infra.database.entities
 
-import fyi.manpreet.fyi.manpreet.chirp.domain.type.UserId
+import fyi.manpreet.chirp.domain.type.UserId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

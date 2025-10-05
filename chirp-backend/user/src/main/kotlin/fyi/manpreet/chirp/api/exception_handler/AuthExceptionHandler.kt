@@ -3,7 +3,7 @@ package fyi.manpreet.chirp.api.exception_handler
 import fyi.manpreet.chirp.api.dto.ErrorBody
 import fyi.manpreet.chirp.domain.exception.EmailNotVerifiedException
 import fyi.manpreet.chirp.domain.exception.InvalidCredentialsException
-import fyi.manpreet.chirp.domain.exception.InvalidTokenException
+import fyi.manpreet.fyi.manpreet.chirp.domain.exception.InvalidTokenException
 import fyi.manpreet.chirp.domain.exception.RateLimitException
 import fyi.manpreet.chirp.domain.exception.SamePasswordException
 import fyi.manpreet.chirp.domain.exception.UnauthorizedException

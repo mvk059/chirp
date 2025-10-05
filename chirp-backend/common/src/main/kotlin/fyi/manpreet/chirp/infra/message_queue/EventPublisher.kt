@@ -1,4 +1,5 @@
 package fyi.manpreet.chirp.infra.message_queue
+
 import fyi.manpreet.chirp.domain.event.ChirpEvent
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
